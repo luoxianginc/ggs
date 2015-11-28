@@ -1,0 +1,2 @@
+# ggs
+Go Game Server
