@@ -2,9 +2,10 @@
 package main
 
 import (
-	"fmt"
+	"ggs/log"
 )
 
 func main() {
-	fmt.Println("Hello World!")
+	log.Init("debug", "")
+	log.Info("GGS Start...")
 }

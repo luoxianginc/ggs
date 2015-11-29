@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"time"
 )
@@ -32,7 +33,7 @@ type Logger struct {
 	file       *os.File
 }
 
-func New(strLevel string, path string) (*Logger, error) {
+func New(strLevel string, pathname string) (*Logger, error) {
 	var level int
 	switch strings.ToLower(strLevel) {
 	case "debug":
@@ -47,9 +48,9 @@ func New(strLevel string, path string) (*Logger, error) {
 		return nil, errors.New("unknown logger level: " + strLevel)
 	}
 
-	var logger *log.Logger
+	var baseLogger *log.Logger
 	var file *os.File
-	if path == "" {
+	if pathname == "" {
 		baseLogger = log.New(os.Stdout, "", log.LstdFlags)
 	} else {
 		now := time.Now()
@@ -74,6 +75,8 @@ func New(strLevel string, path string) (*Logger, error) {
 	logger.level = level
 	logger.baseLogger = baseLogger
 	logger.file = file
+
+	return logger, nil
 }
 
 func (logger *Logger) Close() {
@@ -102,33 +105,47 @@ func (logger *Logger) printf(level int, printLevel string, format string, a ...i
 }
 
 func (logger *Logger) Debug(format string, a ...interface{}) {
-	logger.doPrintf(debugLevel, printDebugLevel, format, a...)
+	logger.printf(debugLevel, printDebugLevel, format, a...)
 }
 
 func (logger *Logger) Info(format string, a ...interface{}) {
-	logger.doPrintf(infoLevel, printReleaseLevel, format, a...)
+	logger.printf(infoLevel, printInfoLevel, format, a...)
 }
 
 func (logger *Logger) Warn(format string, a ...interface{}) {
-	logger.doPrintf(warnLevel, printWarnLevel, format, a...)
+	logger.printf(warnLevel, printWarnLevel, format, a...)
 }
 
 func (logger *Logger) Error(format string, a ...interface{}) {
-	logger.doPrintf(errorLevel, printErrorLevel, format, a...)
+	logger.printf(errorLevel, printErrorLevel, format, a...)
 }
 
 func (logger *Logger) Fatal(format string, a ...interface{}) {
-	logger.doPrintf(fatalLevel, printFatalLevel, format, a...)
+	logger.printf(fatalLevel, printFatalLevel, format, a...)
 }
 
-var gLogger
+var gLogger *Logger
+
+func Init(strLevel string, pathname string) bool {
+	logger, err := New(strLevel, pathname)
+	if err != nil {
+		panic("cannot initialize logger")
+	}
+	
+	gLogger = logger
+	return true;
+}
 
 func Debug(format string, a ...interface{}) {
 	gLogger.Debug(format, a...)
 }
 
-func Release(format string, a ...interface{}) {
-	gLogger.Release(format, a...)
+func Info(format string, a ...interface{}) {
+	gLogger.Info(format, a...)
+}
+
+func Warn(format string, a ...interface{}) {
+	gLogger.Warn(format, a...)
 }
 
 func Error(format string, a ...interface{}) {
