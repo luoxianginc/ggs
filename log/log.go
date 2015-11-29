@@ -1,5 +1,5 @@
 // log.go
-package main
+package log
 
 import (
 	"errors"

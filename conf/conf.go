@@ -1,0 +1,2 @@
+// conf.go
+package conf
