@@ -41,6 +41,8 @@ func New(strLevel string, pathname string) (*Logger, error) {
 		level = infoLevel
 	case "warn":
 		level = warnLevel
+	case "error":
+		level = errorLevel
 	case "fatal":
 		level = fatalLevel
 	default:
@@ -49,9 +51,7 @@ func New(strLevel string, pathname string) (*Logger, error) {
 
 	var baseLogger *log.Logger
 	var file *os.File
-	if pathname == "" {
-		baseLogger = log.New(os.Stdout, "", log.LstdFlags)
-	} else {
+	if pathname != "" {
 		now := time.Now()
 
 		filename := fmt.Sprintf("%d%02d%02d_%02d_%02d_%02d.log",
@@ -68,6 +68,8 @@ func New(strLevel string, pathname string) (*Logger, error) {
 		}
 
 		baseLogger = log.New(file, "", log.LstdFlags)
+	} else {
+		baseLogger = log.New(os.Stdout, "", log.LstdFlags)
 	}
 
 	logger := new(Logger)
@@ -130,9 +132,9 @@ func Init(strLevel string, pathname string) bool {
 	if err != nil {
 		panic("cannot initialize logger")
 	}
-	
+
 	gLogger = logger
-	return true;
+	return true
 }
 
 func Debug(format string, a ...interface{}) {
