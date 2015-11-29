@@ -1,2 +1,1 @@
-// gate.go
 package gate
