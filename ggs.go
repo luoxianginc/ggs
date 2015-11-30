@@ -1,10 +1,9 @@
-package main
+package ggs
 
 import (
 	"ggs/conf"
 	"ggs/log"
 	"ggs/service"
-	"ggs/service/gate"
 	"os"
 	"os/signal"
 )
@@ -23,8 +22,4 @@ func Run(services ...service.Service) {
 	sig := <-c
 	log.Info("GGS is closing down (signal: %v)", sig)
 	service.Destroy()
-}
-
-func main() {
-	Run(gate.Service)
 }
