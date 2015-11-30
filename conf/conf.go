@@ -13,7 +13,7 @@ var Env struct {
 }
 
 func init() {
-	data, err := ioutil.ReadFile("ggs.conf")
+	data, err := ioutil.ReadFile("ggs.env")
 	if err != nil {
 		log.Fatal("%v", err)
 	}
