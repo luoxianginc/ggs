@@ -9,8 +9,8 @@ import (
 
 type Service interface {
 	OnInit()
-	OnDestroy()
 	Run(closeSig chan bool)
+	OnDestroy()
 }
 
 type service struct {
@@ -20,8 +20,7 @@ type service struct {
 }
 
 var (
-	services   []*service
-	serviceCnt int
+	services []*service
 )
 
 func Register(si Service) {
@@ -33,19 +32,17 @@ func Register(si Service) {
 }
 
 func Init() {
-	serviceCnt = len(services)
-
-	for i := 0; i < serviceCnt; i++ {
+	for i := 0; i < len(services); i++ {
 		services[i].si.OnInit()
 	}
 
-	for i := 0; i < serviceCnt; i++ {
+	for i := 0; i < len(services); i++ {
 		go run(services[i])
 	}
 }
 
 func Destroy() {
-	for i := serviceCnt - 1; i >= 0; i-- {
+	for i := len(services) - 1; i >= 0; i-- {
 		s := services[i]
 		s.closeSig <- true
 		s.wg.Wait()
