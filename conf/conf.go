@@ -1,8 +1,24 @@
 package conf
 
-var (
-	StackBufLen = 4096
-	
-	LogLevel = "debug"
-	LogPath  = ""
+import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
 )
+
+var Env struct {
+	StackBufLen int
+	LogLevel    string
+	LogPath     string
+}
+
+func init() {
+	data, err := ioutil.ReadFile("ggs.conf")
+	if err != nil {
+		log.Fatal("%v", err)
+	}
+	err = json.Unmarshal(data, &Env)
+	if err != nil {
+		log.Fatal("%v", err)
+	}
+}

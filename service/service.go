@@ -59,8 +59,8 @@ func run(s *service) {
 func destroy(s *service) {
 	defer func() {
 		if r := recover(); r != nil {
-			if conf.StackBufLen > 0 {
-				buf := make([]byte, conf.StackBufLen)
+			if conf.Env.StackBufLen > 0 {
+				buf := make([]byte, conf.Env.StackBufLen)
 				l := runtime.Stack(buf, false)
 				log.Error("%v: %s", r, buf[:l])
 			} else {
