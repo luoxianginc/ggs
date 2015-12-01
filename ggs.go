@@ -11,6 +11,7 @@ import (
 func Run(services ...service.Service) {
 	log.Init(conf.Env.LogLevel, conf.Env.LogPath)
 	log.Info("GGS is starting up...")
+	conf.Init()
 
 	for i := 0; i < len(services); i++ {
 		service.Register(services[i])

@@ -3,7 +3,6 @@ package gate
 import (
 	"ggs/conf"
 	"ggs/network"
-	"time"
 )
 
 var Service = new(Gate)
@@ -15,15 +14,13 @@ func (gate *Gate) OnInit() {
 }
 
 func (gate *Gate) Run(closeSig chan bool) {
-	var wsServer *network.WSServer = new(network.WSServer)
+	var wsServer *network.WSServer
 	if conf.Env.WSAddr != "" {
-		wsServer.Addr = conf.Env.WSAddr
-		wsServer.MaxMsgLen = conf.Env.MaxMsgLen
-		wsServer.HTTPTimeout = conf.Env.HTTPTimeout * time.Microsecond
+		wsServer = new(network.WSServer)
 	}
-
+	
 	if wsServer != nil {
-		wsServer.Start()
+		wsServer.Start(nil)
 	}
 	<-closeSig
 	if wsServer != nil {
