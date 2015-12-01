@@ -4,12 +4,17 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"time"
 )
 
 var Env struct {
 	StackBufLen int
 	LogLevel    string
 	LogPath     string
+
+	WSAddr      string
+	MaxMsgLen   uint32
+	HTTPTimeout time.Duration
 }
 
 func init() {
