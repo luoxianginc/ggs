@@ -16,7 +16,7 @@ type WSServer struct {
 }
 
 type WSHandler struct {
-	//	newAgent func(*WSConn) Agent
+	newAgent func(*WSConn) Agent
 	upgrader websocket.Upgrader
 	//	conns WebsocketConnSet
 	//	mutexConns      sync.Mutex
@@ -39,7 +39,7 @@ func (handler *WSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer handler.wg.Done()
 }
 
-func (server *WSServer) Start(func(*WSConn) Agent) {
+func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
 	ln, err := net.Listen("tcp", conf.Env.WSAddr)
 	if err != nil {
 		log.Fatal("%v", err)
@@ -51,6 +51,7 @@ func (server *WSServer) Start(func(*WSConn) Agent) {
 
 	server.ln = ln
 	server.handler = &WSHandler{
+		newAgent: newAgent,
 		upgrader: websocket.Upgrader{
 			HandshakeTimeout: conf.Env.HTTPTimeout,
 			CheckOrigin:      func(_ *http.Request) bool { return true },
