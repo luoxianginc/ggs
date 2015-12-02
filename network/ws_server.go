@@ -40,14 +40,14 @@ func (handler *WSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
+	if newAgent == nil {
+		log.Fatal("newAgent must not be nil")
+	}
+
 	ln, err := net.Listen("tcp", conf.Env.WSAddr)
 	if err != nil {
 		log.Fatal("%v", err)
 	}
-
-	//	if server.NewAgent == nil {
-	//		log.Fatal("NewAgent must not be nil")
-	//	}
 
 	server.ln = ln
 	server.handler = &WSHandler{

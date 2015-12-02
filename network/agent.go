@@ -1,3 +1,6 @@
 package network
 
-type Agent struct {}
+type Agent interface {
+	Run()
+	OnClose()
+}
