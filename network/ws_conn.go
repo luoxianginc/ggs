@@ -47,7 +47,7 @@ func newWSConn(conn *websocket.Conn, pendingWriteNum int, maxMsgLen uint32) *WSC
 	return wsConn
 }
 
-func (wsConn *WSConn) doDestroy() {
+func (wsConn *WSConn) destroy() {
 	wsConn.conn.UnderlyingConn().(*net.TCPConn).SetLinger(0)
 	wsConn.conn.Close()
 	close(wsConn.writeChan)
@@ -61,7 +61,7 @@ func (wsConn *WSConn) Destroy() {
 		return
 	}
 
-	wsConn.doDestroy()
+	wsConn.destroy()
 }
 
 func (wsConn *WSConn) Close() {
@@ -71,14 +71,14 @@ func (wsConn *WSConn) Close() {
 		return
 	}
 
-	wsConn.doWrite(nil)
+	wsConn.write(nil)
 	wsConn.closeFlag = true
 }
 
-func (wsConn *WSConn) doWrite(b []byte) {
+func (wsConn *WSConn) write(b []byte) {
 	if len(wsConn.writeChan) == cap(wsConn.writeChan) {
 		log.Debug("close conn: channel full")
-		wsConn.doDestroy()
+		wsConn.destroy()
 		return
 	}
 
@@ -122,7 +122,7 @@ func (wsConn *WSConn) WriteMsg(args ...[]byte) error {
 
 	// don't copy
 	if len(args) == 1 {
-		wsConn.doWrite(args[0])
+		wsConn.write(args[0])
 		return nil
 	}
 
@@ -134,7 +134,7 @@ func (wsConn *WSConn) WriteMsg(args ...[]byte) error {
 		l += len(args[i])
 	}
 
-	wsConn.doWrite(msg)
+	wsConn.write(msg)
 
 	return nil
 }

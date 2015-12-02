@@ -12,8 +12,7 @@ type Gate struct {
 	AgentChanRPC *chanrpc.Server
 }
 
-func (gate *Gate) OnInit() {
-}
+func (gate *Gate) OnInit() {}
 
 func (gate *Gate) Run(closeSig chan bool) {
 	var wsServer *network.WSServer
@@ -41,7 +40,6 @@ func (gate *Gate) OnDestroy() {}
 type agent struct {
 	conn     network.Conn
 	gate     *Gate
-	userData interface{}
 }
 
 func (a *agent) Run() {

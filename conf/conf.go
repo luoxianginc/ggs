@@ -13,8 +13,10 @@ var Env struct {
 	StackBufLen int
 	LogLevel    string
 	LogPath     string
-	
-	MaxMsgLen   uint32
+
+	MaxConnNum      int
+	PendingWriteNum int
+	MaxMsgLen       uint32
 
 	WSAddr      string
 	HTTPTimeout time.Duration

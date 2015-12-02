@@ -16,11 +16,11 @@ type WSServer struct {
 }
 
 type WSHandler struct {
-	newAgent func(*WSConn) Agent
-	upgrader websocket.Upgrader
-	//	conns WebsocketConnSet
-	//	mutexConns      sync.Mutex
-	wg sync.WaitGroup
+	newAgent   func(*WSConn) Agent
+	upgrader   websocket.Upgrader
+	conns      WebsocketConnSet
+	mutexConns sync.Mutex
+	wg         sync.WaitGroup
 }
 
 func (handler *WSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -37,6 +37,31 @@ func (handler *WSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	handler.wg.Add(1)
 	defer handler.wg.Done()
+
+	handler.mutexConns.Lock()
+	if handler.conns == nil {
+		handler.mutexConns.Unlock()
+		conn.Close()
+		return
+	}
+	if len(handler.conns) >= conf.Env.MaxConnNum {
+		handler.mutexConns.Unlock()
+		conn.Close()
+		log.Debug("too many connections")
+		return
+	}
+	handler.conns[conn] = struct{}{}
+	handler.mutexConns.Unlock()
+
+	wsConn := newWSConn(conn, conf.Env.PendingWriteNum, conf.Env.MaxMsgLen)
+	agent := handler.newAgent(wsConn)
+	agent.Run()
+
+	wsConn.Close()
+	handler.mutexConns.Lock()
+	delete(handler.conns, conn)
+	handler.mutexConns.Unlock()
+	agent.OnClose()
 }
 
 func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
@@ -52,12 +77,14 @@ func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
 	server.ln = ln
 	server.handler = &WSHandler{
 		newAgent: newAgent,
+		conns:    make(WebsocketConnSet),
 		upgrader: websocket.Upgrader{
 			HandshakeTimeout: conf.Env.HTTPTimeout,
 			CheckOrigin:      func(_ *http.Request) bool { return true },
 		},
 	}
 	httpServer := &http.Server{
+		//Addr:           conf.Env.WSAddr,
 		Handler:        server.handler,
 		ReadTimeout:    conf.Env.HTTPTimeout,
 		WriteTimeout:   conf.Env.HTTPTimeout,
@@ -68,6 +95,13 @@ func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
 
 func (server *WSServer) Close() {
 	server.ln.Close()
+
+	server.handler.mutexConns.Lock()
+	for conn := range server.handler.conns {
+		conn.Close()
+	}
+	server.handler.conns = nil
+	server.handler.mutexConns.Unlock()
 
 	server.handler.wg.Wait()
 }
