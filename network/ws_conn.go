@@ -5,6 +5,7 @@ import (
 	"net"
 	"sync"
 
+	"ggs/conf"
 	"ggs/log"
 
 	"github.com/gorilla/websocket"
@@ -20,11 +21,11 @@ type WSConn struct {
 	closeFlag bool
 }
 
-func newWSConn(conn *websocket.Conn, pendingWriteNum int, maxMsgLen uint32) *WSConn {
+func newWSConn(conn *websocket.Conn) *WSConn {
 	wsConn := new(WSConn)
 	wsConn.conn = conn
-	wsConn.writeChan = make(chan []byte, pendingWriteNum)
-	wsConn.maxMsgLen = maxMsgLen
+	wsConn.writeChan = make(chan []byte, conf.Env.PendingWriteNum)
+	wsConn.maxMsgLen = conf.Env.MaxMsgLen
 
 	go func() {
 		for b := range wsConn.writeChan {

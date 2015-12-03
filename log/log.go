@@ -1,13 +1,14 @@
 package log
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
 	"path"
 	"strings"
 	"time"
+
+	"ggs/conf"
 )
 
 const (
@@ -32,9 +33,11 @@ type Logger struct {
 	file       *os.File
 }
 
-func New(strLevel string, pathname string) (*Logger, error) {
+var gLogger *Logger
+
+func Init() {
 	var level int
-	switch strings.ToLower(strLevel) {
+	switch strings.ToLower(conf.Env.LogLevel) {
 	case "debug":
 		level = debugLevel
 	case "info":
@@ -46,12 +49,12 @@ func New(strLevel string, pathname string) (*Logger, error) {
 	case "fatal":
 		level = fatalLevel
 	default:
-		return nil, errors.New("unknown logger level: " + strLevel)
+		panic("unknown logger level: " + conf.Env.LogLevel)
 	}
 
 	var baseLogger *log.Logger
 	var file *os.File
-	if pathname != "" {
+	if conf.Env.LogPath != "" {
 		now := time.Now()
 
 		filename := fmt.Sprintf("%d%02d%02d_%02d_%02d_%02d.log",
@@ -62,9 +65,9 @@ func New(strLevel string, pathname string) (*Logger, error) {
 			now.Minute(),
 			now.Second())
 
-		file, err := os.Create(path.Join(pathname, filename))
+		file, err := os.Create(path.Join(conf.Env.LogPath, filename))
 		if err != nil {
-			return nil, err
+			panic("cannot create log file")
 		}
 
 		baseLogger = log.New(file, "", log.LstdFlags)
@@ -72,12 +75,10 @@ func New(strLevel string, pathname string) (*Logger, error) {
 		baseLogger = log.New(os.Stdout, "", log.LstdFlags)
 	}
 
-	logger := new(Logger)
-	logger.level = level
-	logger.baseLogger = baseLogger
-	logger.file = file
-
-	return logger, nil
+	gLogger = new(Logger)
+	gLogger.level = level
+	gLogger.baseLogger = baseLogger
+	gLogger.file = file
 }
 
 func (logger *Logger) Close() {
@@ -123,18 +124,6 @@ func (logger *Logger) Error(format string, a ...interface{}) {
 
 func (logger *Logger) Fatal(format string, a ...interface{}) {
 	logger.printf(fatalLevel, printFatalLevel, format, a...)
-}
-
-var gLogger *Logger
-
-func Init(strLevel string, pathname string) bool {
-	logger, err := New(strLevel, pathname)
-	if err != nil {
-		panic("cannot initialize logger")
-	}
-
-	gLogger = logger
-	return true
 }
 
 func Debug(format string, a ...interface{}) {

@@ -24,7 +24,6 @@ type WSHandler struct {
 }
 
 func (handler *WSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Info("OKOK")
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", 405)
 		return
@@ -54,7 +53,7 @@ func (handler *WSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handler.conns[conn] = struct{}{}
 	handler.mutexConns.Unlock()
 
-	wsConn := newWSConn(conn, conf.Env.PendingWriteNum, conf.Env.MaxMsgLen)
+	wsConn := newWSConn(conn)
 	agent := handler.newAgent(wsConn)
 	agent.Run()
 
@@ -84,7 +83,7 @@ func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
 			CheckOrigin:      func(_ *http.Request) bool { return true },
 		},
 	}
-	
+
 	httpServer := &http.Server{
 		Addr:           conf.Env.WSAddr,
 		Handler:        server.handler,
@@ -92,7 +91,7 @@ func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
 		WriteTimeout:   conf.Env.HTTPTimeout,
 		MaxHeaderBytes: 1024,
 	}
-	
+
 	go httpServer.Serve(ln)
 	log.Info("Websocket host: %v", conf.Env.WSAddr)
 }

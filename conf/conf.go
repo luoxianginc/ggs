@@ -3,7 +3,6 @@ package conf
 import (
 	"encoding/json"
 	"fmt"
-	"ggs/log"
 	"io/ioutil"
 	"os"
 	"time"
@@ -38,14 +37,13 @@ func init() {
 
 func Init() {
 	if Env.WSAddr != "" {
-		log.Info("Loading websocket environment...")
 		if Env.MaxMsgLen <= 0 {
 			Env.MaxMsgLen = 4096
-			log.Info("invalid MaxMsgLen, reset to %v", Env.MaxMsgLen)
+			fmt.Println("invalid MaxMsgLen, reset to %v", Env.MaxMsgLen)
 		}
 		if Env.HTTPTimeout <= 0 {
 			Env.HTTPTimeout = 10 * time.Second
-			log.Info("invalid HTTPTimeout, reset to %v", Env.HTTPTimeout)
+			fmt.Println("invalid HTTPTimeout, reset to %v", Env.HTTPTimeout)
 		}
 	}
 }

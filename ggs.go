@@ -9,7 +9,7 @@ import (
 )
 
 func Run(services ...service.Service) {
-	log.Init(conf.Env.LogLevel, conf.Env.LogPath)
+	log.Init()
 	log.Info("GGS is starting up...")
 	conf.Init()
 
