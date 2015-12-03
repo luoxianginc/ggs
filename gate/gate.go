@@ -5,7 +5,10 @@ import (
 	"ggs/conf"
 	"ggs/log"
 	"ggs/network"
+	"reflect"
 )
+
+var Service = new(Gate)
 
 type Gate struct {
 	Processor    network.Processor
@@ -40,6 +43,7 @@ func (gate *Gate) OnDestroy() {}
 type agent struct {
 	conn     network.Conn
 	gate     *Gate
+	userData interface{}
 }
 
 func (a *agent) Run() {
@@ -72,4 +76,27 @@ func (a *agent) OnClose() {
 			log.Error("chanrpc error: %v", err)
 		}
 	}
+}
+
+func (a *agent) WriteMsg(msg interface{}) {
+	if a.gate.Processor != nil {
+		data, err := a.gate.Processor.Marshal(msg)
+		if err != nil {
+			log.Error("marshal message %v error: %v", reflect.TypeOf(msg), err)
+			return
+		}
+		a.conn.WriteMsg(data...)
+	}
+}
+
+func (a *agent) Close() {
+	a.conn.Close()
+}
+
+func (a *agent) UserData() interface{} {
+	return a.userData
+}
+
+func (a *agent) SetUserData(data interface{}) {
+	a.userData = data
 }

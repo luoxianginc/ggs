@@ -35,7 +35,7 @@ type Logger struct {
 
 var gLogger *Logger
 
-func Init() {
+func init() {
 	var level int
 	switch strings.ToLower(conf.Env.LogLevel) {
 	case "debug":

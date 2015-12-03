@@ -19,6 +19,8 @@ var Env struct {
 
 	WSAddr      string
 	HTTPTimeout time.Duration
+
+	ChanRPCLen int
 }
 
 func init() {
@@ -33,9 +35,7 @@ func init() {
 		fmt.Println("invalid format: ggs.env")
 		os.Exit(1)
 	}
-}
 
-func Init() {
 	if Env.WSAddr != "" {
 		if Env.MaxMsgLen <= 0 {
 			Env.MaxMsgLen = 4096

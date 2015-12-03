@@ -1,7 +1,6 @@
 package ggs
 
 import (
-	"ggs/conf"
 	"ggs/log"
 	"ggs/service"
 	"os"
@@ -9,9 +8,7 @@ import (
 )
 
 func Run(services ...service.Service) {
-	log.Init()
 	log.Info("GGS is starting up...")
-	conf.Init()
 
 	for i := 0; i < len(services); i++ {
 		service.Register(services[i])
@@ -21,6 +18,8 @@ func Run(services ...service.Service) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
 	sig := <-c
-	log.Info("GGS is closing down (signal: %v)", sig)
+
+	log.Info("GGS is closing down... (signal: %v)", sig)
 	service.Destroy()
+	log.Info("BYE")
 }
