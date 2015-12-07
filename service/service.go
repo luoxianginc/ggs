@@ -19,9 +19,7 @@ type service struct {
 	wg       sync.WaitGroup
 }
 
-var (
-	services []*service
-)
+var services []*service
 
 func Register(si Service) {
 	s := new(service)
