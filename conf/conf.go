@@ -42,8 +42,9 @@ func init() {
 			fmt.Println("invalid MaxMsgLen, reset to %v", Env.MaxMsgLen)
 		}
 		if Env.HTTPTimeout <= 0 {
-			Env.HTTPTimeout = 10 * time.Second
+			Env.HTTPTimeout = 10
 			fmt.Println("invalid HTTPTimeout, reset to %v", Env.HTTPTimeout)
 		}
+		Env.HTTPTimeout *= time.Second
 	}
 }
