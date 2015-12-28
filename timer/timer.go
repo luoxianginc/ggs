@@ -33,8 +33,8 @@ func (t *Timer) Cb() {
 	defer func() {
 		t.cb = nil
 		if r := recover(); r != nil {
-			if conf.LenStackBuf > 0 {
-				buf := make([]byte, conf.LenStackBuf)
+			if conf.StackBufLen > 0 {
+				buf := make([]byte, conf.StackBufLen)
 				l := runtime.Stack(buf, false)
 				log.Error("%v: %s", r, buf[:l])
 			} else {
