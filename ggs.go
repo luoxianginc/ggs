@@ -20,6 +20,6 @@ func Run(services ...service.Service) {
 	sig := <-c
 
 	log.Info("GGS is closing down... (signal: %v)", sig)
-	service.Destroy()
+	//service.Destroy()
 	log.Info("BYE")
 }

@@ -20,7 +20,8 @@ var Env struct {
 	WSAddr      string
 	HTTPTimeout time.Duration
 
-	ChanRPCLen int
+	ChanRPCLen         int
+	TimerDispatcherLen int
 }
 
 func init() {
