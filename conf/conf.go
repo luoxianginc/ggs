@@ -22,6 +22,10 @@ var Env struct {
 
 	ChanRPCLen         int
 	TimerDispatcherLen int
+
+	ConsolePort   int
+	ConsolePrompt string
+	ProfilePath   string
 }
 
 func init() {

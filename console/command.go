@@ -144,7 +144,7 @@ func (c *CommandCPUProf) run(args []string) string {
 
 func profileName() string {
 	now := time.Now()
-	return path.Join(conf.ProfilePath,
+	return path.Join(conf.Env.ProfilePath,
 		fmt.Sprintf("%d%02d%02d_%02d_%02d_%02d",
 			now.Year(),
 			now.Month(),

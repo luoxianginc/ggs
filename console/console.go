@@ -12,12 +12,12 @@ import (
 var server *network.TCPServer
 
 func Init() {
-	if conf.ConsolePort == 0 {
+	if conf.Env.ConsolePort == 0 {
 		return
 	}
 
 	server = new(network.TCPServer)
-	server.Addr = "localhost:" + strconv.Itoa(conf.ConsolePort)
+	server.Addr = "localhost:" + strconv.Itoa(conf.Env.ConsolePort)
 	server.MaxConnNum = int(math.MaxInt32)
 	server.PendingWriteNum = 100
 	server.NewAgent = newAgent
@@ -45,8 +45,8 @@ func newAgent(conn *network.TCPConn) network.Agent {
 
 func (a *Agent) Run() {
 	for {
-		if conf.ConsolePrompt != "" {
-			a.conn.Write([]byte(conf.ConsolePrompt))
+		if conf.Env.ConsolePrompt != "" {
+			a.conn.Write([]byte(conf.Env.ConsolePrompt))
 		}
 
 		line, err := a.reader.ReadString('\n')

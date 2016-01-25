@@ -1,6 +1,7 @@
 package ggs
 
 import (
+	"ggs/console"
 	"ggs/log"
 	"ggs/service"
 	"os"
@@ -14,6 +15,8 @@ func Run(services ...service.Service) {
 		service.Register(services[i])
 	}
 	service.Init()
+
+	console.Init()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
