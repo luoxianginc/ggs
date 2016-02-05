@@ -28,6 +28,9 @@ func (s *Skeleton) ChanRPCServer() *chanrpc.Server {
 func (s *Skeleton) Run(closeSig chan bool) {
 	for {
 		select {
+		case <-closeSig:
+			s.chanRPCServer.Close()
+			return
 		case ci := <-s.chanRPCServer.ChanCall:
 			err := s.chanRPCServer.Exec(ci)
 			if err != nil {

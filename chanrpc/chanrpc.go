@@ -3,6 +3,7 @@ package chanrpc
 import (
 	"errors"
 	"fmt"
+	"ggs/log"
 	"runtime"
 
 	"ggs/conf"
@@ -158,6 +159,7 @@ func (s *Server) Open(l int) *Client {
 func (c *Client) call(ci *CallInfo, block bool) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
+			log.Error("panic: %#v", r)
 			err = r.(error)
 		}
 	}()

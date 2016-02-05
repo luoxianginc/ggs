@@ -38,7 +38,9 @@ func (gate *Gate) Run(closeSig chan bool) {
 	}
 }
 
-func (gate *Gate) OnDestroy() {}
+func (gate *Gate) OnDestroy() {
+	log.Debug("gate service destoryed.")
+}
 
 type agent struct {
 	conn     network.Conn
