@@ -9,6 +9,8 @@ import (
 )
 
 var Env struct {
+	Name string
+
 	StackBufLen int
 	LogLevel    string
 	LogPath     string
