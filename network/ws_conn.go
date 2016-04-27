@@ -51,16 +51,16 @@ func newWSConn(conn *websocket.Conn) *WSConn {
 func (wsConn *WSConn) destroy() {
 	wsConn.conn.UnderlyingConn().(*net.TCPConn).SetLinger(0)
 	wsConn.conn.Close()
-	close(wsConn.writeChan)
-	wsConn.closeFlag = true
+
+	if !wsConn.closeFlag {
+		close(wsConn.writeChan)
+		wsConn.closeFlag = true
+	}
 }
 
 func (wsConn *WSConn) Destroy() {
 	wsConn.Lock()
 	defer wsConn.Unlock()
-	if wsConn.closeFlag {
-		return
-	}
 
 	wsConn.destroy()
 }
