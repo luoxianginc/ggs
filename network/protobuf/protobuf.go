@@ -133,6 +133,7 @@ func (p *Processor) Marshal(msg interface{}) ([][]byte, error) {
 		err := fmt.Errorf("message %s not registered", msgType)
 		return nil, err
 	}
+	log.Debug("response id: %v", _id)
 
 	id := make([]byte, 2)
 	if p.littleEndian {
