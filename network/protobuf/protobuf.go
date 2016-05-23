@@ -114,6 +114,7 @@ func (p *Processor) Unmarshal(data []byte) (interface{}, error) {
 	} else {
 		id = binary.BigEndian.Uint16(data)
 	}
+	log.Debug("***** receive id: %v *****", id)
 
 	// msg
 	if id >= uint16(len(p.msgInfo)) {
@@ -133,7 +134,7 @@ func (p *Processor) Marshal(msg interface{}) ([][]byte, error) {
 		err := fmt.Errorf("message %s not registered", msgType)
 		return nil, err
 	}
-	log.Debug("response id: %v", _id)
+	log.Debug("///// response id: %v /////", _id)
 
 	id := make([]byte, 2)
 	if p.littleEndian {
