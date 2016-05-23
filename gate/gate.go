@@ -62,6 +62,7 @@ func (a *agent) Run() {
 				log.Debug("unmarshal message error: %v", err)
 				break
 			}
+			log.Debug("***** receive msg: %v *****")
 			err = a.gate.Processor.Route(msg, a)
 			if err != nil {
 				log.Debug("route message error: %v", err)
@@ -82,6 +83,7 @@ func (a *agent) OnClose() {
 
 func (a *agent) WriteMsg(msg interface{}) {
 	if a.gate.Processor != nil {
+		log.Debug("///// response msg: %v /////", msg)
 		data, err := a.gate.Processor.Marshal(msg)
 		if err != nil {
 			log.Error("marshal message %v error: %v", reflect.TypeOf(msg), err)
