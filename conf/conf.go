@@ -2,6 +2,7 @@ package conf
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -30,16 +31,26 @@ var Env struct {
 	ProfilePath   string
 }
 
+var EnvPath string
+
 func init() {
-	data, err := ioutil.ReadFile("ggs.env")
+	flag.StringVar(&EnvPath, "env", "", "path of env file")
+	flag.Parse()
+
+	if EnvPath == "" {
+		fmt.Println("param -env no set")
+		os.Exit(1)
+	}
+
+	data, err := ioutil.ReadFile(EnvPath + "ggs.env")
 	if err != nil {
-		fmt.Println("file not found: ggs.env")
+		fmt.Println("env file not found, path: " + EnvPath)
 		os.Exit(1)
 	}
 
 	err = json.Unmarshal(data, &Env)
 	if err != nil {
-		fmt.Println("invalid format: ggs.env")
+		fmt.Printf("env file format error: %v\n", err)
 		os.Exit(1)
 	}
 
