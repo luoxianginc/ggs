@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"time"
 )
 
@@ -40,7 +41,7 @@ func init() {
 		os.Exit(1)
 	}
 
-	data, err := ioutil.ReadFile(EnvPath + "ggs.env")
+	data, err := ioutil.ReadFile(path.Join(EnvPath, "ggs.env"))
 	if err != nil {
 		fmt.Println("env file not found, path: " + EnvPath)
 		os.Exit(1)
