@@ -21,7 +21,7 @@ type WSConn struct {
 	closeFlag bool
 }
 
-func newWSConn(conn *websocket.Conn) *WSConn {
+func NewWSConn(conn *websocket.Conn) *WSConn {
 	wsConn := new(WSConn)
 	wsConn.conn = conn
 	wsConn.writeChan = make(chan []byte, conf.Env.PendingWriteNum)
