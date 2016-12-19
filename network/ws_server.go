@@ -1,10 +1,12 @@
 package network
 
 import (
+	"crypto/tls"
 	"ggs/conf"
 	"ggs/log"
 	"net"
 	"net/http"
+	"path/filepath"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -69,7 +71,8 @@ func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
 		log.Fatal("newAgent must not be nil")
 	}
 
-	ln, err := net.Listen("tcp", conf.Env.WSAddr)
+	ln, err := tls.Listen("tcp", conf.Env.WSAddr, getTLSConfig())
+	//ln, err := net.Listen("tcp", conf.Env.WSAddr)
 	if err != nil {
 		log.Fatal("%v", err)
 	}
@@ -107,4 +110,17 @@ func (server *WSServer) Close() {
 	server.handler.mutexConns.Unlock()
 
 	server.handler.wg.Wait()
+}
+
+func getTLSConfig() *tls.Config {
+	certName := filepath.Join(conf.Env.CertPath, "cert.pem")
+	keyName := filepath.Join(conf.Env.CertPath, "key.pem")
+	cert, err := tls.LoadX509KeyPair(certName, keyName)
+	if err != nil {
+		log.Fatal("%v", err)
+	}
+
+	return &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}
 }

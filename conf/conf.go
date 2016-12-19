@@ -21,6 +21,7 @@ var Env struct {
 
 	WSAddr      string
 	HTTPTimeout time.Duration
+	CertPath    string
 
 	ChanRPCLen         int
 	TimerDispatcherLen int
