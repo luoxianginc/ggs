@@ -71,8 +71,13 @@ func (server *WSServer) Start(newAgent func(*WSConn) Agent) {
 		log.Fatal("newAgent must not be nil")
 	}
 
-	ln, err := tls.Listen("tcp", conf.Env.WSAddr, getTLSConfig())
-	//ln, err := net.Listen("tcp", conf.Env.WSAddr)
+	var ln net.Listener
+	var err error
+	if conf.Env.CertPath != "" {
+		ln, err = tls.Listen("tcp", conf.Env.WSAddr, getTLSConfig())
+	} else {
+		ln, err = net.Listen("tcp", conf.Env.WSAddr)
+	}
 	if err != nil {
 		log.Fatal("%v", err)
 	}
