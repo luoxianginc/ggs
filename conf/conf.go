@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"time"
@@ -31,15 +32,10 @@ var Env struct {
 }
 
 var EnvPath string
+var CrossEvnPath string
 
 func init() {
-	flag.StringVar(&EnvPath, "env", "", "path of env file")
-	flag.Parse()
-
-	if EnvPath == "" {
-		fmt.Println("param -env no set")
-		os.Exit(1)
-	}
+	initFlags()
 
 	data, err := ioutil.ReadFile(path.Join(EnvPath, "ggs.env"))
 	if err != nil {
@@ -63,5 +59,19 @@ func init() {
 			fmt.Println("invalid HTTPTimeout, reset to %v", Env.HTTPTimeout)
 		}
 		Env.HTTPTimeout *= time.Second
+	}
+}
+
+func initFlags() {
+	flag.StringVar(&EnvPath, "env", "", "path of env file")
+	flag.StringVar(&CrossEvnPath, "cross-env", "", "path of cross env file")
+
+	flag.Parse()
+
+	if EnvPath == "" {
+		log.Fatal("flag env no set")
+	}
+	if CrossEvnPath == "" {
+		log.Fatal("flag cross-env no set")
 	}
 }
